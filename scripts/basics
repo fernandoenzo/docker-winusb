@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e  # Exit immediately if a command exits with a non-zero status.
+set -x  # All executed commands are printed to the terminal
+
+gpg --recv-keys --keyserver keyserver.ubuntu.com 531EE72F4C9D234C
+gpg -a -o /tmp/webupd8.gpg --export 531EE72F4C9D234C
+apt-key add /tmp/webupd8.gpg
+
+rm -rf /etc/apt/preferences.d/systemd
+aptitude update ; aptitude install -y makedev udev woeusb
+
+echo -e '#!/bin/bash\nexec "$@"' > /usr/bin/pkexec
+
+apt-get -y autoremove ; aptitude -y autoclean ; apt-get -y autoclean
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.aptitude
